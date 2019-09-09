@@ -1,0 +1,51 @@
+training: !!bool "true"
+#device: "cpu"
+device: "cuda"
+#unprocessed_data: './librispeech/*/*'
+unprocessed_data: './TIMIT/*/*/*/*.wav'
+#unprocessed_data: './testlibri/*/*.flac'
+#unprocessed_data: './test_offline/EN/002_reduce/*.wav'
+#unprocessed_data: './test_offline/conversation/*.wav'
+#unprocessed_data: './wav_mathclass/pyhsics_03/*.wav'
+#unprocessed_data: './development_set-2/*/wav'
+#unprocessed_data: './physics_03_new.wav'
+conversation_path: './wav_mathclass'
+---
+data:
+    train_path: './train_wav48'
+    train_path_unprocessed: './TIMIT/TRAIN/*/*/*.wav'
+    #test_path: './test_flac'
+    test_path: './test_wav48'
+    test_path_unprocessed: './TIMIT/TEST/*/*/*.wav'
+    data_preprocessed: !!bool "true" 
+    sr: 16000
+    nfft: 512 #For mel spectrogram preprocess
+    window: 0.025 #(s)
+    hop: 0.01 #(s)
+    nmels: 40 #Number of mel energies
+    tisv_frame: 180 #Max number of time steps in input after preprocess
+---   
+model:
+    hidden: 768 #Number of LSTM hidden layer units
+    num_layer: 3 #Number of LSTM layers
+    proj: 256 #Embedding size
+    #model_path: './final_epoch_950_batch_id_141.model' #Model path for testing, inference, or resuming training
+    model_path: './final_epoch_950_batch_id_141.model'    
+---
+train:
+    N : 4 #Number of speakers in batch
+    M : 5 #Number of utterances per speaker
+    num_workers: 0 #number of workers for dataloader
+    lr: 0.01 
+    epochs: 950 #Max training speaker epoch 
+    log_interval: 30 #Epochs before printing progress
+    log_file: './speech_id_checkpoint/Stats'
+    checkpoint_interval: 120 #Save model after x speaker epochs
+    checkpoint_dir: './speech_id_checkpoint'
+    restore: !!bool "false" #Resume training from previous model path
+---
+test:
+    N : 1 #Number of speakers in batch
+    M : 50 #Number of utterances per speaker
+    num_workers: 1 #number of workers for data laoder
+    epochs: 10 #testing speaker epochs
